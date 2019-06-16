@@ -23,6 +23,7 @@ header h1 {
   margin: 0;
   line-height: 60px;
   font-weight: 100;
+  cursor: pointer;
 }
 
 .user-info {
@@ -59,6 +60,9 @@ header h1 {
   transform: translate(-50%, -50%);
 }
 
+.projects.greyed {
+  opacity: 0.5;
+}
 .project {
   margin-bottom: 10px;
 }
@@ -117,12 +121,43 @@ header h1 {
   display: flex;
   justify-content: flex-end;
 }
+.project-in-progress {
+  background-color: white;
+  padding: 10px;
+}
 
 .create-project label {
   display: flex;
-  width: 300px;
+  width: 500px;
   justify-content: space-between;
   margin-bottom: 10px;
+}
+.create-project input {
+  width: 350px;
+}
+.project-freelancer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #faebd7;
+  padding: 0 15px;
+  justify-content: space-between
+}
+.project-freelancer div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.project-freelancer button {
+  margin-left: 10px;
+  border-width: 2px;
+  padding: 5px;
+}
+.project-freelancer canvas {
+  margin-right: 10px;
+}
+.project-freelancer code {
+  font-size: 14px;
 }
 
 .button {

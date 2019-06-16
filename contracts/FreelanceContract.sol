@@ -9,6 +9,7 @@ contract FreelanceHub {
         address owner;
         uint fee;
         address[] freelancers;
+        bytes32[] commits;
     }
 
     uint256 public numJobs = 0;
@@ -26,17 +27,23 @@ contract FreelanceHub {
             JobStatus.ongoing,
             msg.sender,
             actualFee,
-            new address[](0)
+            new address[](0),
+            new bytes32[](0)
         );
         jobs[jobId] = newJob;
     }
 
-    // function startJob(uint256 jobId, address payable freelancerWallet) public {
-    //     Job memory job = jobs[jobId];
-    //     require(job.status == JobStatus.ongoing, "This job is already completed");
-    //     require(job.freelancers.length <= 5, "Maximum amount of freelancers are already working on this job");
-    //     job.freelancers.push(freelancerWallet);
-    // }
+    function startJob(uint256 jobId, address payable freelancerWallet) public {
+        Job memory job = jobs[jobId];
+        require(job.status == JobStatus.ongoing, "This job is already completed");
+        require(job.freelancers.length <= 5, "Maximum amount of freelancers are already working on this job");
+        // job.freelancers.push(freelancerWallet);
+    }
+
+    function commit(uint256 jobId, bytes32 commithash) public {
+        Job memory job = jobs[jobId];
+        // job.commits.push(commithash);
+    }
 
     // function finishJob(uint256 jobId, address payable freelancerWallet) public {
     //     Job memory job = jobs[jobId];

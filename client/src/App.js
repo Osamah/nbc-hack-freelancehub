@@ -13,7 +13,7 @@ const projects = [
     "description": "Pepsi microsite homepage redesign",
     "fullDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vehicula turpis non enim maximus luctus. Maecenas maximus accumsan ultricies. Vestibulum eu mattis massa. Aliquam rhoncus pharetra ex a viverra. Duis fermentum est ante, sit amet ultrices dolor tincidunt vel. Nulla iaculis sapien vel leo commodo, posuere consequat velit tincidunt. Donec felis quam, accumsan vitae lorem ut, imperdiet vulputate turpis.",
     "techStack": "React, html, css, Adobe Photoshop",
-    "time": "20 minutes ago",
+    "time": "Just now",
     "fee": "5 ETH",
     "img": "https://brandmark.io/logo-rank/random/pepsi.png"
   },
@@ -56,7 +56,13 @@ const projects = [
 ]
 
 class App extends Component {
-  state = { storageValue: 0, web3: null, accounts: null, contract: null };
+  state = {
+    storageValue: 0,
+    web3: null,
+    accounts: null,
+    contract: null,
+    view: 0 // 0 Freelance, 1 Client, 2 Project detail F, Project detail C
+  };
 
   componentDidMount = async () => {
     try {
@@ -118,8 +124,20 @@ class App extends Component {
     contract.methods.createJob(100).send({ from: accounts[0] })
     .on('confirmation', async (confirmationNumber, receipt) => {
       console.log(confirmationNumber, receipt);
+      this.setState({ created: true });
+    })
+    .catch(data => {
+      console.log('set error', data);
+    });
+  }
 
-      // this.setState({ storageValue: parseInt(response._hex) });
+  startJob = async (callback) => {
+    const { accounts, contract } = this.state;
+
+    contract.methods.createJob(10).send({ from: accounts[0] })
+    .on('confirmation', async (confirmationNumber, receipt) => {
+      console.log(confirmationNumber, receipt);
+      callback()
     })
     .catch(data => {
       console.log('set error', data);
@@ -134,7 +152,7 @@ class App extends Component {
     return (
       <div>
         <header>
-          <h1>Freelance Hub</h1>
+          <h1 onClick={this.toggleView}>Freelance Hub</h1>
           <section className="user-info">
             <span>{this.state.accounts[0].substr(0, 6)}...{this.state.accounts[0].substr(-5)}</span>
             <Blockies seed={this.state.accounts[0]} size={10} scale={4} />
@@ -153,12 +171,48 @@ class App extends Component {
   }
 
   renderContent() {
-    // return this.renderFreelancer();
-    return this.renderCompany();
+    const {view} = this.state;
+
+    switch(view) {
+      case 0:
+        return this.renderFreelancer1();
+      case 1:
+        return this.renderCompany();
+      case 2:
+        return this.renderFreelancer();
+      case 3:
+        return this.renderCDetail();
+
+      default:
+          return this.renderFreelancer();
+    }
+  }
+
+  showDetailView = () => {
+    this.setState({view:1})
+  }
+
+  toggleView = () => {
+    const newView = this.state.view + 1;
+    this.setState({view: newView > 3 ? 0 : newView})
+  }
+
+  renderFreelancer1() {
+    return (
+      <div>
+        <Projects title="Available projects" projects={projects.slice(1, 3)} buttonHandler={this.showDetailView} startJob={this.startJob}/>
+        <Projects title="Completed projects" projects={projects.slice(-2)} greyed={true} />
+      </div>
+    );
   }
 
   renderFreelancer() {
-    return <Projects title="Available projects" projects={projects} />;
+    return (
+      <div>
+        <Projects title="Available projects" projects={projects.slice(0, 3)} buttonHandler={this.showDetailView} startJob={this.startJob}/>
+        <Projects title="Completed projects" projects={projects.slice(-2)} greyed={true} />
+      </div>
+    );
   }
 
   renderCompany() {
@@ -177,7 +231,16 @@ class App extends Component {
             <button onClick={this.createJob} className="button">Create project</button>
         </section>
 
-        <Projects title="Past projects" projects={[projects[1]]} />
+        {this.state.created && <Projects title="Ongoing projects" projects={[projects[0]]} />}
+        <Projects title="Past projects" projects={[projects[1]]} greyed={true} />
+      </div>
+    );
+  }
+
+  renderCDetail() {
+    return (
+      <div>
+        <Projects title="Ongoing projects" projects={[projects[0]]} cdetail={true} />
       </div>
     );
   }
